@@ -20,7 +20,6 @@ nodeList:
     type: bcoin
     storageAmt: 1500Gi
     replicaCount: 5
-	...
 ```
 
 ---
@@ -45,7 +44,6 @@ nodeList:
     type: btcd
     storageAmt: 3000Gi
     group: cluster
-	...
 ```
 
 ---
@@ -67,7 +65,6 @@ nodeList:
     storageAmt: 1500Gi
     group: cluster
     participateInNPlusOne: true
-	...
 ```
 
 ---
@@ -96,7 +93,6 @@ nodeList:
     storageAmt: 4000Gi
     group: cluster
     targetHosts: ["host3-large-hd"]
-	...
 ```
 
 ---
@@ -126,8 +122,6 @@ nodeList:
           secretKeyRef:
             name: simnet-rpc-secret
             key: pass
-			...
-
 ```
 
 ---
@@ -163,8 +157,6 @@ nodeList:
         targetPort: 28333
         protocol: TCP
         name: zmqblock
-		...
-
 ```
 
 ---
@@ -199,7 +191,6 @@ nodeList:
     group: cluster
     participateInNPlusOne: true
     isolateNode: true
-	...
 ```
 
 ---
@@ -222,7 +213,6 @@ nodeList:
 	replicaCount: 3
     args:
       - "--testnet"
-	  ...
 ```
 
 ---
@@ -272,7 +262,6 @@ don't have time to test this)
           - secretName: bitcoin-tls
             hosts:
               - btc.gilded.lan
-			  ...
 ```
 
 ---
@@ -299,7 +288,6 @@ nodeList:
     storageAmt: 3000Gi
     group: cluster
     isolateNode: true
-	...
 ```
 
 ---
@@ -322,7 +310,6 @@ nodeList:
     type: bitcoind
     storageAmt: 3000Gi
     group: cluster2
-	...
 ```
 
 --- 
