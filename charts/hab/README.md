@@ -39,7 +39,7 @@ And [examples](./examples.md) for examples.
 helm install hab gildedpled/hab -f values.hab.yaml
 ```
 
-## Roadmap Feature list
+## Roadmap Feature List
 
 -   Build images from repo locally, and automatically, and push to remote, via:
     https://flavio.castelli.me/2020/09/16/build-multi-architecture-container-images-using-kubernetes/
