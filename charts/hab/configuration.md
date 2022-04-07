@@ -191,7 +191,7 @@ Each `nodeList` node is deployed as a kubernetes
 [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
 Generally speaking, this is more desirable than a standard deployments type,
 after all, Bitcoin is a stateful application. What is more, it may be required
-as some clients if deployed as Deployments, will lock the database while in use,
+as some clients, if released as Deployments, will lock the database while in use,
 preventing multiple pods from accessing the same volume without onerous
 development overhead.
 

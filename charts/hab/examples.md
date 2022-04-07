@@ -7,7 +7,6 @@ nodeList:
   - name: livenet
     type: bitcoind
     storageAmt: 1000Gi
-	...
 ```
 
 ---
