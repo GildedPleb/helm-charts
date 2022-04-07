@@ -473,7 +473,7 @@ nodeList:
 
 ## Aren't some of these not actually Highly Available?
 
-For this repo, we are assuming a varied definition of High Availability (HA).
+Yes. For this repo, we are assuming a varied definition of High Availability (HA).
 Broadly speaking, HA usually refers to software architecture that continues to
 function regardless of certain, tollerable, degradations. As it would apply
 here, it would traditionally mean a replicated Bitcoind node statefulset, one
