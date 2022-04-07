@@ -1,0 +1,41 @@
+{{- range $idx, $nodeSet := .Values.nodeList }}
+{{- if (or .enabled (not (hasKey . "enabled"))) }}
+{{- $name := printf "%s-%s-%s" (include "HAB.fullname" $) $nodeSet.type $nodeSet.name -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "HAB.labels" $ | nindent 4 }}
+    app: {{ $name }}
+spec:
+  {{- if (($nodeSet.externalAccess).enabled) }}
+  type: "LoadBalancer"
+  {{- else }}
+  type: "ClusterIP"
+  {{- end }}
+  ports:
+    {{- with (get ($.Files.Get "node-types.yml" | fromYaml) $nodeSet.type) }}
+    - port: {{ .ports.p2pPort }}
+      targetPort: {{ .ports.p2pPort }}
+      protocol: TCP
+      name: p2p
+    {{- end }}
+    {{- if $nodeSet.additionalServicePorts }}
+    {{- range $_, $p := $nodeSet.additionalServicePorts }}
+    - port: {{ $p.port }}
+      targetPort: {{ $p.targetPort }}
+      protocol: {{ $p.protocol }}
+      name: {{ $p.name }}
+    {{- end }}
+    {{- end }}
+  publishNotReadyAddresses: true
+  selector:
+    {{- include "HAB.selectorLabels" $ | nindent 4 }}
+    app: {{ $name }}
+  {{- if not $nodeSet.externalAccess }}
+  clusterIP: None
+  {{- end }}
+{{ end }}
+{{ end }}

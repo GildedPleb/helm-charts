@@ -1,0 +1,13 @@
+apiVersion: longhorn.io/v1beta1
+kind: RecurringJob
+metadata:
+  name: bitcoin-everyblock-1day
+  namespace: longhorn-system
+  labels:
+    {{- include "HAB.labels" . | nindent 4 }}
+spec:
+  # Every 10 minutes starting 0 min after the hour, kept for 1 day
+  cron: "0/10 * * * ?"
+  task: "backup"
+  retain: 5
+  concurrency: 1

@@ -1,0 +1,6 @@
+values.hab.yaml
+# Various IDEs
+.project
+.idea/
+.vscode
+.DS_Store

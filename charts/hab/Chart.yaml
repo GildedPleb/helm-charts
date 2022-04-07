@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hab
+description: A Helm chart for a high availability bitcoin node
+type: application
+version: 1.0.0
+appVersion: "22.0"

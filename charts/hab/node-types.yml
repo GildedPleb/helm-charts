@@ -1,0 +1,50 @@
+bitcoind:
+  repository: "ruimarinho/bitcoin-core"
+  pullPolicy: "IfNotPresent"
+  tag: ""
+  pullSecrets: []
+  command: []
+  env:
+    - name: BITCOIN_DATA
+      value: &data "/data/"
+  mount:
+    path: *data
+    setParam: "-datadir="
+  peers:
+    multiArg: true
+    addParam: "-addnode="
+  ports:
+    p2pParam: "-port="
+    p2pPort: "8333"
+btcd:
+  repository: "gildedpleb/btcd"
+  pullPolicy: "IfNotPresent"
+  tag: "v0.22.0-beta"
+  pullSecrets: []
+  command: []
+  env: []
+  mount:
+    path: "/root/.btcd"
+    setParam: "--datadir="
+  peers:
+    multiArg: true
+    addParam: "--addpeer="
+  ports:
+    p2pParam: "--listen=0.0.0.0:"
+    p2pPort: "8333"
+bcoin:
+  repository: "gildedpleb/bcoin"
+  pullPolicy: "IfNotPresent"
+  tag: "v2.2.0"
+  pullSecrets: []
+  command: ["bcoin"]
+  env: []
+  mount:
+    path: "/.bcoin"
+    setParam: "--prefix="
+  peers:
+    multiArg: false
+    addParam: "--nodes="
+  ports:
+    p2pParam: "--port="
+    p2pPort: "8333"

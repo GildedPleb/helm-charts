@@ -1,0 +1,25 @@
+{{- range $idx, $nodeSet := .Values.nodeList }}
+{{- if (or .enabled (not (hasKey . "enabled"))) }}
+{{- $name := printf "%s-%s-%s" (include "HAB.fullname" $) $nodeSet.type $nodeSet.name -}}
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: "sc-{{ $name }}"
+  labels:
+    {{- include "HAB.labels" $ | nindent 4 }}
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  replicaAutoBalance: "disable"
+  dataLocality: "best-effort"
+  numberOfReplicas: "1" # Depending on implementation, a bitcoin instance may attain a permanent lock on the database as a security feature. This lock is replicated accross longhorn replication volume instances, meaning, even if you have a replication, you may not have access to it, depending on how the original node or host was shut down and how it comes back up. As such, it is far more reliable (and useful) to replicate full node instances than it is to only replicate the blockchain, and keep this set to `1`.
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  {{- if .participateInBackups }}
+  recurringJobSelector: '[{"name":"bitcoin-everyblock-1day","isGroup":false},{"name":"bitcoin-everyblock-1day-snap","isGroup":false}]'
+  {{- end }}
+{{ end }}
+{{ end }}

@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bitcoin-tls
+  namespace: bitcoin
+spec:
+  secretName: bitcoin-tls
+  dnsNames:
+    - "btc.gilded.lan"
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

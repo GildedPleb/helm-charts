@@ -1,0 +1,24 @@
+PRC Access
+
+There are a few ways to get RPC access to any node. Assuming that appropriate rpc creds have been set
+when deploying the nodes:
+
+1.  Get access via executing comands in the Pod directly. Assuming no custom RPC server is defined -
+
+      kubectl -n bitcoin exec hab-btcd-simnet-0 -- btcctl --rpcuser=user --rpcpass=pass --simnet getinfo
+
+2.  Additionally, you can port forward from the Pod you wish to connect to. Below will map a btcd
+    instances default RPC simnet port (18556) to localhost:18556 - you may need to adjust tls settings
+    or copy certs -
+
+    Terminal 1:
+      kubectl -n bitcoin port-forward hab-btcd-simnet-0 18556:18556
+    Terminal 2:
+      btcctl --rpcuser=user --rpcpass=pass --simnet getinfo
+
+3.  Lastly, you can access RPC services by setting 'externalAccess.enabled: true' on a node set, defining
+    an ingress, adding a certificate (if needed), then copying the btcd generated RPC cert on the pod
+    to your local machine, and using it in RPC calls to the exposed service. However, if the replica
+    count for the node set is > 1 the loadbalancer will direct traffic all the nodes in the set, where
+    only one of the nodes will allow access for that cert. Alternatively, '--notls` options exist on
+    various node implementations, but this is less secure, and certainly not recomened for public facing nodes.

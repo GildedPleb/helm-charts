@@ -1,0 +1,204 @@
+{{- range $idx, $nodeSet := .Values.nodeList }}
+{{- if (or .enabled (not (hasKey . "enabled"))) }}
+{{- $name := printf "%s-%s-%s" (include "HAB.fullname" $) $nodeSet.type $nodeSet.name -}}
+{{- $peerList := get (include "HAB.peersInGroup" $ | fromYaml) ($nodeSet.group | default (print $nodeSet.name "-group")) }}
+---
+{{- include "HAB.validateNames" $ }}
+{{- include "HAB.validateHosts" $ }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "HAB.labels" $ | nindent 4 }}
+    app: {{ $name }}
+spec:
+  serviceName:  {{ $name }}
+  replicas: {{ $nodeSet.replicaCount | default 1 }}
+  podManagementPolicy: "Parallel"
+  selector:
+    matchLabels:
+      {{- include "HAB.selectorLabels" $ | nindent 6 }}
+      app: {{ $name }}
+      {{- if (or $nodeSet.isolateNode (not (hasKey $nodeSet "isolateNode"))) }}
+      type: hab-isolated
+      {{- end }}
+  template:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml $ | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "HAB.selectorLabels" $ | nindent 8 }}
+        app: {{ $name }}
+        {{- if (or $nodeSet.isolateNode (not (hasKey $nodeSet "isolateNode"))) }}
+        type: hab-isolated
+        {{- end }}
+    spec:
+      {{- with (get ($.Files.Get "node-types.yml" | fromYaml) $nodeSet.type) }}
+      {{- with .pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "HAB.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      {{- if (or $nodeSet.isolateNode (not (hasKey $nodeSet "isolateNode"))) }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              type: hab-isolated
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          {{- if $nodeSet.targetHosts }}
+          {{- if and $nodeSet.participateInNPlusOne $.Values.nPlusOneHosts }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 50
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      {{- range $nodeSet.targetHosts }}
+                      - {{ . }}
+                      {{- end }}
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      {{- range $.Values.nPlusOneHosts }}
+                      - {{ . }}
+                      {{- end }}
+          {{- else }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    {{- range $nodeSet.targetHosts }}
+                    - {{ . }}
+                    {{- end }}
+          {{- end }}
+          {{- else }}
+          {{- if and $nodeSet.participateInNPlusOne $.Values.nPlusOneHosts }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 50
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      {{- range $.Values.nPlusOneHosts }}
+                      - {{ . }}
+                      {{- end }}
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      {{- range $.Values.nPlusOneHosts }}
+                      - {{ . }}
+                      {{- end }}
+          {{- else }}
+          {{- if $.Values.nPlusOneHosts }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    {{- range $.Values.nPlusOneHosts }}
+                    - {{ . }}
+                    {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+      {{- if gt (len $peerList) 1 }}
+      initContainers:
+        - name: "init-{{ $.Chart.Name }}"
+          image: busybox:latest
+          command:
+            - 'sh'
+            - '-c'
+            - 'until {{ range $peerList }}nslookup {{ first (regexSplit ":" . -1) }} && {{ end }}true; do sleep 2; done'
+      {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- if len .command }}
+          command: {{ .command }}
+          {{- end }}
+          {{- if or (len .env) (len ($nodeSet.envs | default list )) }}
+          env: {{ if len .env }}{{ .env | toYaml | nindent 12}}{{ end }}{{ if len ($nodeSet.envs | default list )}}{{ $nodeSet.envs | toYaml | nindent 12}}{{ end }}
+          {{- end }}
+          args:
+            # Add peers from group "{{ $nodeSet.group | default (print $nodeSet.name "-group") }}" (if any)
+            {{- if gt (len $peerList) 1 }}
+            {{- with .peers }}
+            {{- $ctx := . -}}
+            {{- if .multiArg }}
+            {{- range $peerList }}
+            - "{{ $ctx.addParam }}{{ . }}"
+            {{- end }}
+            {{- else }}
+            {{- $peers := "" }}
+            {{- range $peerList }}
+            {{- $peers = print $peers . "," }}
+            {{- end }}
+            - {{$ctx.addParam}}{{ trimAll "," $peers }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            # Add additional args (if any)
+            {{- range $nodeSet.args }}
+            - {{ . | quote }}
+            {{- end }}
+            # Set appropriate ports
+            {{- with .ports }}
+            - "{{ .p2pParam }}{{ .p2pPort }}"
+            {{- end }}
+            # Set data directory
+            {{- with .mount }}
+            - "{{ .setParam }}{{ .path }}"
+            {{- end }}
+          volumeMounts:
+            - mountPath: {{ .mount.path }}
+              name: "volume-{{ $name }}"
+          {{- if $nodeSet.readinessCMD }}
+          readinessProbe:
+            initialDelaySeconds: 60 # 1 minute
+            periodSeconds: 600 # 10 minutes
+            exec:
+              command:
+                - sh
+                - -c
+                - {{ $nodeSet.readinessCMD | quote }}
+          {{- end }}
+          {{- if $nodeSet.resources }}
+          resources:
+            {{- toYaml $nodeSet.resources | nindent 12 }}
+          {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: "volume-{{ $name }}"
+      spec:
+        storageClassName: "sc-{{ $name }}"
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ $nodeSet.storageAmt | default "Error: A valid storage amount is needed" }}
+  {{- end }}
+{{- end }}
+{{ end }}

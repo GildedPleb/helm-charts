@@ -1,0 +1,59 @@
+# # Default values for HAB.
+# # This is a YAML-formatted file.
+# # Declare variables to be passed into your templates.
+# # See ./configuration.md and ./examples.md for a breakdown of how to use this values.yaml
+
+
+#######################
+##  HAB NODE VALUES  ##
+#######################
+
+
+# # WARNING: Depending on implementation, some nodes may fail to launch if dns names given here can not be resolved.
+# # Leave commented out to not add any
+# additionalPeers:
+#   - addressAndPort: "8.8.8.8:8333"
+#     group: "prod"
+
+# # Leave commented out to not add any
+# nPlusOneHosts:
+#   - "host1"
+
+nodeList:
+  - enabled: true
+    name: simple
+    type: bitcoind
+    storageAmt: "1000Gi"
+
+
+#######################
+## BASIC BOILERPLATE ##
+#######################
+
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
