@@ -204,13 +204,13 @@ nodeList:
     storageAmt: 3000Gi
     group: live-cluster
     isolateNode: true
-	replicaCount: 3
+    replicaCount: 3
   - name: testnet
     type: btcd
     storageAmt: 10Gi
     group: test-cluster
     targetHosts: ["host1", "host2",  "host3"]
-	replicaCount: 3
+    replicaCount: 3
     args:
       - "--testnet"
 ```
