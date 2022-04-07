@@ -29,7 +29,7 @@ all kinds of individual down time, disruptions, and failures.
 ```
 helm repo add gildedpleb https://gildedpleb.github.io/helm-charts/
 helm repo update
-helm show values gildedpled/hab > values.hab.yml
+helm show values gildedpleb/hab > values.hab.yml
 ```
 
 Edit `values.hab.yml` according to [configuration](./configuration.md) options.
