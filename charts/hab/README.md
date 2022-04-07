@@ -27,7 +27,7 @@ all kinds of individual down time, disruptions, and failures.
 > Additionally, having host names will be helpful.
 
 ```
-helm repo add gildedpled/hab
+helm repo add gildedpleb https://gildedpleb.github.io/helm-charts/
 helm repo update
 helm show values gildedpled/hab > values.hab.yml
 ```
