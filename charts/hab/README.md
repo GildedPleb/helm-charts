@@ -1,3 +1,5 @@
+>Warning: This is under active development
+
 # High Availability Bitcoin Node - Helm Chart
 
 This is a rudimentary Helm Chart for a simple Highly Available Bitcoin node. At
