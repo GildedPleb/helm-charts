@@ -23,7 +23,7 @@ all node implementations of the same type, as such:
 bitcoind:                                  # Yes   | Key             |                | Repository, cmd, or project name used as reference in the `type` key below.
   repository: "ruimarinho/bitcoin-core"    # Yes   | String / url    |                | Image name MUST be multi-arch image
   pullPolicy: "IfNotPresent"               # No    | String          | IfNotPresent   |
-  tag: ""                                  # Maybe | String          |                | If the Bitcoin repo to use with this node type does not follow the Bitcoin Core semver, then tag will need to be defined
+  tag: "22.0"                              # Yes   | String          |                | The default tag must be defined here. It can be overriden elsewhere.
   pullSecrets: []                          # No    | List            | nil            |
   command: []                              # No    | List of Strings | nil            | Entry command to run on startup, if the image does not provide one, or it needs revising
   env:                                     # No    | Dict            | nil            |
