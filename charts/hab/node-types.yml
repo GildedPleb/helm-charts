@@ -1,7 +1,7 @@
 bitcoind:
   repository: "ruimarinho/bitcoin-core"
   pullPolicy: "IfNotPresent"
-  tag: ""
+  tag: "22.0"
   pullSecrets: []
   command: []
   env:

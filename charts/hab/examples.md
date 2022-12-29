@@ -1,6 +1,6 @@
 # Examples
 
-A standard single raspberry pi node, 1 host, 1 node:
+A standard single Raspberry Pi node, 1 host, 1 node:
 
 ```yml
 nodeList:
@@ -70,7 +70,7 @@ nodeList:
 ---
 
 A 4 host, 3 node cluster with very uneven storage distribution per host, where
-only bitcoind and bcoin can participate in nPlusOne
+only bitcoind and bcoin can participate in N+1
 
 ```yml
 nPlusOneHosts:
@@ -98,7 +98,7 @@ nodeList:
 ---
 
 A 3 node, 1 - 3 host simnet cluster with rpc enabled, and mapped in envs. Will
-require a kubernetes secret `simnet-rpc-secret`
+require a Kubernetes secret `simnet-rpc-secret`
 
 ```yml
 nodeList:
@@ -295,9 +295,9 @@ nodeList:
 2 nearly identical bitcoind nodes, on 2 hosts, that are not networked. This is
 essentially the same as adding `replicaCount: 2` to the first node, and deleting
 the second, with one important difference: because these nodes are in different
-peer groups, they will not talk to eachother (unless they talk to a remote peer
+peer groups, they will not talk to each other (unless they talk to a remote peer
 who shares their neighbors address). This is how to isolate peers from what
-would normally be the same statefulset newtworking defaults. Also note that the
+would normally be the same statefulset networking defaults. Also note that the
 names need to change to pass validation.
 
 ```yml
@@ -310,6 +310,25 @@ nodeList:
     type: bitcoind
     storageAmt: 3000Gi
     group: cluster2
+```
+---
+
+Diversify bitcoind release risk by deploying three nodes, each targeting a different release. 
+
+```yml
+nodeList:
+  - name: livenet1
+    type: bitcoind
+    storageAmt: 3000Gi
+    tagOverride: "latest"
+  - name: livenet2
+    type: bitcoind
+    storageAmt: 3000Gi
+    tagOverride: "22.0"
+  - name: livenet3
+    type: bitcoind
+    storageAmt: 3000Gi
+    tagOverride: "0.19"
 ```
 
 --- 
@@ -475,7 +494,7 @@ nodeList:
 
 Yes. For this repo, we are assuming a varied definition of High Availability (HA).
 Broadly speaking, HA usually refers to software architecture that continues to
-function regardless of certain, tollerable, degradations. As it would apply
+function regardless of certain, tolerable, degradation. As it would apply
 here, it would traditionally mean a replicated Bitcoind node statefulset, one
 replica on each host, with N+1 tolerances, public exposure via a load balancer
 and ingress, and each node mapping this publicly reachable address to the
@@ -485,16 +504,16 @@ simply route around the failed host.
 
 This is an excellent pattern, but we are not sure if that is the best/only way
 to play this wholistically speaking. For instance, a load balancer may disrupt
-the way that bitcoin handles in-transit peer-to-peer messaging accross
+the way that bitcoin handles in-transit peer-to-peer messaging across
 nodes/hosts--I could be wrong here, it bares putting more research into this
 project and this v1 is excellent groundwork to that end. But more broadly
 speaking, even if we achieve fully robust traditional HA, I think that it only
 amounts to a tactic in the larger strategy of robust node operation; a tactic
-along side running multiple implementations of the same bitcoin protocol,
+alongside running multiple implementations of the same bitcoin protocol,
 running on a diversity or power sources, using a diversity of internet
-providers, using a variety of host computers, ect.
+providers, using a variety of host computers, etc.
 
-As such, some of the examples above are indeed not HA on traditional metrics in
+As such, some examples above are indeed not HA on traditional metrics in
 the slightest. However, they remain highly available on different metrics. For
 instance, any node which runs multiple implementations of the bitcoin protocol
 on multiple hardware architectures from multiple supply chains, dramatically
@@ -505,6 +524,6 @@ may affect one dependency in one repo, but not others.
 If the above traditional HA ideals are not reachable in this version, it is
 already on the road map to make some kind of k8s controller that can map traffic
 to nodes without worry about their underlying implementation language, logic, or
-idiosyncrasies. Though the bitcoin protocol is universal accross all
+idiosyncrasies. Though the bitcoin protocol is universal across all
 implementations, running and interacting with any individual node is far from
 unified.

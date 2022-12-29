@@ -3,8 +3,8 @@
 # High Availability Bitcoin Node - Helm Chart
 
 This is a rudimentary Helm Chart for a simple Highly Available Bitcoin node. At
-present it supports multiple bitcoin implementations (bitcoind, btcd, bcoin),
-architectures (arm64, amd64), deployment environments (cloud, bare-metal), and
+present, it supports multiple bitcoin implementations (bitcoind, btcd, bcoin),
+architectures (arm64, amd64), deployment environments (cloud, bare-metal), versions (latest, 0.22, 0.19, etc), and
 networks (prod, test, simnet, etc).
 
 ## Why?
@@ -13,7 +13,7 @@ Bitcoin, at a macro level, is a fundamentally highly available system: though
 one node might fail, the incentives in the system ensure that there are many
 nodes still available. So why make a highly available node? Bitcoin is not,
 however, highly available at the micro node level: a single node may experience
-all kinds of individual down time, disruptions, and failures.
+all kinds of individual downtime, disruptions, and failures.
 
 ## Install
 
@@ -59,6 +59,7 @@ helm install hab gildedpled/hab -f values.hab.yaml
 -   Full tor integration, like tor services, or ingress
 -   Add autoscaling... probably infeasible due to resource constraints
 -   Reduce log pollution
+-   Investigate making nodes that have 1 replica, and are not intending to scale, being deployed as a deployment instead of a stateful set. 
 
 ## Contributors
 
@@ -67,3 +68,4 @@ gildedpleb
 ---
 
 Be a Gilded Pleb. Run a HAB node.
+   

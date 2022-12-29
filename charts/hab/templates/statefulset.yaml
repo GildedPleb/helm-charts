@@ -135,7 +135,7 @@ spec:
         - name: {{ $.Chart.Name }}
           securityContext:
             {{- toYaml $.Values.securityContext | nindent 12 }}
-          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          image: "{{ $nodeSet.repositoryOverride | default .repository }}:{{ $nodeSet.tagOverride | default .tag }}"
           imagePullPolicy: {{ .pullPolicy }}
           {{- if len .command }}
           command: {{ .command }}
