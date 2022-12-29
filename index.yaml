@@ -3,6 +3,16 @@ entries:
   hab:
   - apiVersion: v2
     appVersion: "1"
+    created: "2022-12-29T20:18:54.39635693Z"
+    description: A Helm chart for a highly available bitcoin node
+    digest: 1973ea104c9301a64608db1fc2bf9408390916998db6d4dc7467ea87c0d1043d
+    name: hab
+    type: application
+    urls:
+    - https://github.com/GildedPleb/helm-charts/releases/download/hab-1.1.2/hab-1.1.2.tgz
+    version: 1.1.2
+  - apiVersion: v2
+    appVersion: "1"
     created: "2022-12-29T06:59:07.693015712Z"
     description: A Helm chart for a highly available bitcoin node
     digest: bb94b844a07386d038987a9abdfaeef764f145700732bfaf75d062bdebc3e473
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://github.com/GildedPleb/helm-charts/releases/download/hab-1.0.0/hab-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-29T06:59:07.693034613Z"
+generated: "2022-12-29T20:18:54.39637153Z"
