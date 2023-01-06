@@ -333,6 +333,8 @@ nodeList:
 
 --- 
 
+### PoC HAB Node
+
 HAB node design for a 7 node cluster with prod and dev capabilities
 
 | Host |  Space      | Name                                   | Group      | Test Simnet    |
