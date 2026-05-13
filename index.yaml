@@ -51,4 +51,17 @@ entries:
     urls:
     - https://github.com/GildedPleb/helm-charts/releases/download/hab-1.0.0/hab-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-29T20:18:54.39637153Z"
+  superset-js:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-05-13T22:41:38.356032373Z"
+    description: Production deployment of superset-js (Bun/TypeScript pipeline) with
+      Litestream sidecar for continuous SQLite backup to MinIO. Supports granular
+      normalization feature flags for incremental rollout.
+    digest: 20e179c8042c139b65a50cd13c4a76ac08727825432306406585678c4dbff65c
+    name: superset-js
+    type: application
+    urls:
+    - https://github.com/GildedPleb/helm-charts/releases/download/superset-js-0.1.0/superset-js-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-05-13T22:41:38.356048854Z"
