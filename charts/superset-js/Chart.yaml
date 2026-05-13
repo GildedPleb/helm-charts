@@ -1,0 +1,6 @@
+apiVersion: v2
+name: superset-js
+version: 0.1.0
+description: Production deployment of superset-js (Bun/TypeScript pipeline) with Litestream sidecar for continuous SQLite backup to MinIO. Supports granular normalization feature flags for incremental rollout.
+type: application
+appVersion: "latest"

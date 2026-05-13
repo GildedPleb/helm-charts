@@ -1,0 +1,60 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/gildedpleb/superset-js
+  pullPolicy: Always
+  tag: "latest"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+persistence:
+  enabled: true
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+  mountPath: /data
+
+litestream:
+  enabled: true
+  image:
+    repository: litestream/litestream
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  endpoint: http://minio.minio.svc.cluster.local:9000
+  bucket: superset-js
+  dbPath: superset.db
+
+secretName: superset-js-secrets
+
+# ============================================
+# Environment Variables (Fully Extensible)
+# ============================================
+# Add or change any env var here. It will be automatically injected.
+# No need to edit the chart when adding new normalization pathways.
+env:
+  ENABLE_INGESTION: "true"
+  ENABLE_NORMALIZATION_OXLINT_RAW: "false"
+  ENABLE_NORMALIZATION_OXLINT_JS_DEPS: "false"
+
+  # Add new ones below as needed:
+  # ENABLE_NORMALIZATION_ESLINT: "false"
+  # ENABLE_NORMALIZATION_BIOME: "false"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+imagePullSecrets: []

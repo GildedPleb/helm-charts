@@ -1,0 +1,36 @@
+Thank you for installing superset-js!
+
+The deployment includes:
+- The main superset-js pipeline container
+- A Litestream sidecar that continuously replicates SQLite WAL changes to MinIO
+
+## Quick Status Checks
+
+# View pods
+kubectl get pods -n superset-js -l app.kubernetes.io/name=superset-js
+
+# Follow logs (both containers)
+kubectl logs -n superset-js -l app.kubernetes.io/name=superset-js --all-containers=true -f --tail=200
+
+## Local Development
+
+To use fresh production data locally, run from the superset-js repo:
+
+./scripts/dev-normalization.sh
+
+## Managing Feature Flags
+
+Enable normalization pathways incrementally:
+
+helm upgrade superset-js gildedpleb/superset-js \
+  --namespace superset-js \
+  --set enable.normalization.oxlintRaw=true
+
+See the chart README for the full list of flags and rollout guidance.
+
+## Useful Resources
+
+- Chart README: https://github.com/GildedPleb/helm-charts/tree/main/charts/superset-js
+- Application repo: https://github.com/gildedpleb/superset-js
+
+For issues with the database or Litestream, check the sidecar logs.
