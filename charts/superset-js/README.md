@@ -42,7 +42,10 @@ helm install superset-js gildedpleb/superset-js \
 ## Upgrading
 
 ```bash
-helm upgrade superset-js gildedpleb/superset-js --namespace superset-js
+# Enable a specific pathway
+helm upgrade superset-js gildedpleb/superset-js \
+  --namespace superset-js \
+  --set env.ENABLE_NORMALIZATION_OXLINT_RAW=true
 ```
 
 ### Enabling Normalization Pathways (Granular Rollout)
@@ -94,14 +97,28 @@ Never copy a live WAL-mode database with plain `cp`.
 
 ### Key Values
 
-| Key                                 | Description                                           | Default               |
-| ----------------------------------- | ----------------------------------------------------- | --------------------- |
-| `enable.ingestion`                  | Master toggle for discovery + acquisition + retention | `true`                |
-| `enable.normalization.oxlintRaw`    | First granular normalization pathway                  | `false`               |
-| `enable.normalization.oxlintJsDeps` | Second granular normalization pathway                 | `false`               |
-| `persistence.size`                  | Size of the database PVC                              | `5Gi`                 |
-| `litestream.enabled`                | Enable continuous backup sidecar                      | `true`                |
-| `secretName`                        | Name of the Secret containing credentials             | `superset-js-secrets` |
+| Key                  | Description                               | Default               |
+| -------------------- | ----------------------------------------- | --------------------- |
+| `persistence.size`   | Size of the database PVC                  | `5Gi`                 |
+| `litestream.enabled` | Enable continuous backup sidecar          | `true`                |
+| `secretName`         | Name of the Secret containing credentials | `superset-js-secrets` |
+
+## Environment Variables (Fully Extensible)
+
+This chart uses a flat `env:` map so you can add or change any environment variable without modifying the chart.
+
+### Example
+
+```yaml
+env:
+  ENABLE_INGESTION: "true"
+  ENABLE_NORMALIZATION_OXLINT_RAW: "false"
+  ENABLE_NORMALIZATION_OXLINT_JS_DEPS: "false"
+
+  # Add new pathways here as you develop them
+  # ENABLE_NORMALIZATION_ESLINT: "false"
+  # ENABLE_NORMALIZATION_BIOME: "false"
+```
 
 ## Troubleshooting
 

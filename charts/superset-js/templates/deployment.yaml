@@ -76,11 +76,11 @@ spec:
                   key: MINIO_SECRET_KEY
           args:
             - replicate
-            - /data/superset.db
+            - {{ .Values.persistence.mountPath }}/{{ .Values.litestream.dbPath }}
             - s3://{{ .Values.litestream.bucket }}/{{ .Values.litestream.dbPath }}
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: {{ .Values.persistence.mountPath }}
         {{- end }}
 
       volumes:
