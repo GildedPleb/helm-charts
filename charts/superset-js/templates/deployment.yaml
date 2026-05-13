@@ -84,6 +84,8 @@ spec:
         {{- end }}
 
       volumes:
+        {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "superset-js.fullname" . }}
+        {{- end }}

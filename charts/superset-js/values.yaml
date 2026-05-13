@@ -45,3 +45,16 @@ env:
   # Add new ones below as needed:
   # ENABLE_NORMALIZATION_ESLINT: "false"
   # ENABLE_NORMALIZATION_BIOME: "false"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+imagePullSecrets: []
