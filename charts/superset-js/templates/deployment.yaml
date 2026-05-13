@@ -11,33 +11,54 @@ spec:
       {{- include "superset-js.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "superset-js.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "superset-js.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        # === Main Deployment===
         - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            # Database path (static)
             - name: DB_PATH
               value: "{{ .Values.persistence.mountPath }}/superset.db"
+
+            # GitHub token from Secret
             - name: GITHUB_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretName }}
                   key: GITHUB_TOKEN
-            - name: ENABLE_INGESTION
-              value: "{{ .Values.enable.ingestion }}"
-            - name: ENABLE_NORMALIZATION_OXLINT_RAW
-              value: "{{ .Values.enable.normalization.oxlintRaw }}"
-            - name: ENABLE_NORMALIZATION_OXLINT_JS_DEPS
-              value: "{{ .Values.enable.normalization.oxlintJsDeps }}"
+
+            # ============================================
+            # All other env vars come from .Values.env
+            # Fully dynamic - just add them in values.yaml
+            # ============================================
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
+        # === Litestream Sidecar ===
         {{- if .Values.litestream.enabled }}
         - name: litestream
           image: "{{ .Values.litestream.image.repository }}:{{ .Values.litestream.image.tag }}"
