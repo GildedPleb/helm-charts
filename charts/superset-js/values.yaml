@@ -7,11 +7,11 @@ image:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 1000m          # bump this too if it's CPU hungry
+    memory: 2Gi         # ← start here
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 1Gi
 
 persistence:
   enabled: true
